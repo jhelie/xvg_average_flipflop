@@ -239,7 +239,7 @@ def write_xvg():														#DONE
 	#xvg metadata
 	output_xvg.write("@ title \"Average xvg\"\n")
 	output_xvg.write("@ xaxis label \"distance from cluster z axis (Angstrom)\"\n")
-	output_xvg.write("@ yaxis label \"basic / (basic + hydrophobic) in protein residues\"\n")
+	output_xvg.write("@ yaxis label \"average contact profile by type during flipflop\"\n")
 	output_xvg.write("@ autoscale ONREAD xaxes\n")
 	output_xvg.write("@ TYPE XY\n")
 	output_xvg.write("@ view 0.15, 0.15, 0.95, 0.85\n")
