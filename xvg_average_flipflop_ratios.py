@@ -169,17 +169,16 @@ def load_xvg():															#DONE
 		data_ctct_hphob[:,f_index] = tmp_data[:,2]
 		data_ctct_total[:,f_index] = tmp_data[:,3]
 
-		#remove non meaningful zeros (i.e. not sampled)
-		data_ctct_total[data_ctct_total == 0] = np.nan
-		data_ctct_basic[np.isnan(data_ctct_total)] = np.nan
-		data_ctct_hphob[np.isnan(data_ctct_total)] = np.nan
+	#remove non meaningful zeros (i.e. not sampled)
+	data_ctct_total[data_ctct_total == 0] = np.nan
+	data_ctct_basic[np.isnan(data_ctct_total)] = np.nan
+	data_ctct_hphob[np.isnan(data_ctct_total)] = np.nan
 
-		#calculate ratios
-		tmp_div = np.zeros((nb_rows, 1))
-		tmp_div[:,0] = np.nansum(data_ctct_basic + data_ctct_hphob, axis = 1)
-		tmp_div[np.isnan(tmp_div)] = 1
-		data_ratios_basic = data_ctct_basic / tmp_div
-		data_ratios_hphob = data_ctct_basic / tmp_div
+	#calculate ratios
+	tmp_div = np.nansum(data_ctct_basic + data_ctct_hphob, axis = 1)
+	tmp_div[np.isnan(tmp_div)] = 1
+	data_ratios_basic = data_ctct_basic / tmp_div
+	data_ratios_hphob = data_ctct_hphob / tmp_div
 		
 	return
 
