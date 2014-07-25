@@ -111,7 +111,8 @@ def load_xvg():															#DONE
 	global nb_rows
 	global nb_cols
 	global distance
-	global data_ratios
+	global data_ratios_basic
+	global data_ratios_hphob
 
 	nb_rows = 0
 	nb_cols = 0
@@ -177,7 +178,8 @@ def load_xvg():															#DONE
 		tmp_div = np.zeros((nb_rows, 1))
 		tmp_div[:,0] = np.nansum(data_ctct_basic + data_ctct_hphob, axis = 1)
 		tmp_div[np.isnan(tmp_div)] = 1
-		data_ratios = data_ctct_basic / tmp_div
+		data_ratios_basic = data_ctct_basic / tmp_div
+		data_ratios_hphob = data_ctct_basic / tmp_div
 		
 	return
 
@@ -187,34 +189,16 @@ def load_xvg():															#DONE
 
 def calculate_avg():													#DONE
 
-	global data_ratios_avg
-	global data_ratios_std
+	global data_ratios_basic_avg
+	global data_ratios_basic_std
+	global data_ratios_hphob_avg
+	global data_ratios_hphob_std
 	
-	#remove nan values of the weights
-	weights_nan = np.zeros((nb_rows, 1))	
-	weights_nan_sq = np.zeros((nb_rows, 1))	
-	nb_files = np.ones((nb_rows, 1)) * len(args.xvgfilenames)
-	tmp_weights_nan = np.zeros((nb_rows, len(args.xvgfilenames)))
-	for r in range(0, nb_rows):
-		tmp_weights_nan[r,:] = weights
-		for f_index in range(0, len(args.xvgfilenames)):
-			if np.isnan(data_ratios[r,f_index]):
-				tmp_weights_nan[r,f_index] = 0
-				nb_files[r,0] -= 1
-	weights_nan[:,0] = np.nansum(tmp_weights_nan, axis = 1)
-	weights_nan_sq[:,0] = np.nansum(tmp_weights_nan**2, axis = 1)	
-	weights_nan[weights_nan == 0] = 1
+	data_ratios_basic_avg = scipy.stats.nanmean(data_ratios_basic, axis = 1)
+	data_ratios_basic_std = scipy.stats.nanstd(data_ratios_basic, axis = 1)
 	
-	#avg
-	data_ratios_avg = np.zeros((nb_rows,1))
-	data_ratios_avg[:,0] =  scipy.stats.nanmean(data_ratios * weights * nb_files / weights_nan, axis = 1)
-
-	#std
-	tmp_std = np.zeros((nb_rows, 1))
-	tmp_std[:,0] = np.nansum(weights * (data_ratios - data_ratios_avg[:,0:1])**2, axis = 1)			
-	tmp_div = np.copy((weights_nan)**2 - weights_nan_sq)
-	tmp_div[tmp_div == 0] = 1
-	data_ratios_std = np.sqrt(weights_nan / tmp_div * tmp_std)
+	data_ratios_hphob_avg = scipy.stats.nanmean(data_ratios_hphob, axis = 1)
+	data_ratios_hphob_std = scipy.stats.nanstd(data_ratios_hphob, axis = 1)
 
 	return
 
@@ -247,14 +231,16 @@ def write_xvg():														#DONE
 	output_xvg.write("@ legend box on\n")
 	output_xvg.write("@ legend loctype view\n")
 	output_xvg.write("@ legend 0.98, 0.8\n")
-	output_xvg.write("@ legend length 2\n")
+	output_xvg.write("@ legend length 4\n")
 	output_xvg.write("@ s0 legend \"basic contacts (avg)\"\n")
-	output_xvg.write("@ s1 legend \"hydrophobic contacts (std)\"\n")
+	output_xvg.write("@ s1 legend \"basic contacts (std)\"\n")
+	output_xvg.write("@ s2 legend \"hydrophobic contacts (avg)\"\n")
+	output_xvg.write("@ s3 legend \"hydrophobic contacts (std)\"\n")
 	
 	#data
 	for r in range(0, nb_rows):
 		results = str(distance[r,0])
-		results += "	" + "{:.6e}".format(data_ratios_avg[r,0]) + "	" + "{:.6e}".format(data_ratios_std[r,0])
+		results += "	" + "{:.6e}".format(data_ratios_basic_avg[r,0]) + "	" + "{:.6e}".format(data_ratios_basic_std[r,0]) + "	" + "{:.6e}".format(data_ratios_hphob_avg[r,0]) + "	" + "{:.6e}".format(data_ratios_hphob_std[r,0])
 		output_xvg.write(results + "\n")		
 	output_xvg.close()	
 	
