@@ -173,10 +173,9 @@ def load_xvg():															#DONE
 	data_ctct_total[data_ctct_total == 0] = np.nan
 	data_ctct_basic[np.isnan(data_ctct_total)] = np.nan
 	data_ctct_hphob[np.isnan(data_ctct_total)] = np.nan
-
+	
 	#calculate ratios
-	tmp_div = np.nansum(data_ctct_basic + data_ctct_hphob, axis = 1)
-	tmp_div[np.isnan(tmp_div)] = 1
+	tmp_div = np.nansum(data_ctct_total, axis = 0)
 	data_ratios_basic = data_ctct_basic / tmp_div
 	data_ratios_hphob = data_ctct_hphob / tmp_div
 		
@@ -239,7 +238,7 @@ def write_xvg():														#DONE
 	#data
 	for r in range(0, nb_rows):
 		results = str(distance[r,0])
-		results += "	" + "{:.6e}".format(data_ratios_basic_avg[r,0]) + "	" + "{:.6e}".format(data_ratios_basic_std[r,0]) + "	" + "{:.6e}".format(data_ratios_hphob_avg[r,0]) + "	" + "{:.6e}".format(data_ratios_hphob_std[r,0])
+		results += "	" + "{:.6e}".format(data_ratios_basic_avg[r]) + "	" + "{:.6e}".format(data_ratios_basic_std[r]) + "	" + "{:.6e}".format(data_ratios_hphob_avg[r]) + "	" + "{:.6e}".format(data_ratios_hphob_std[r])
 		output_xvg.write(results + "\n")		
 	output_xvg.close()	
 	
